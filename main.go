@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -20,12 +19,12 @@ func main() {
 	}
 
 	appState := &state{cfg: &cfg}
+
 	cmds := commands{RegisteredCommands: make(map[string]func(*state, command) error)}
 	cmds.register("login", handlerLogin)
 
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: cli <command> [args...]")
-		return
+		log.Fatal("Usage: cli <command> [args...]")
 	}
 
 	cmdName := os.Args[1]
