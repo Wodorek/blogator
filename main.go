@@ -3,9 +3,14 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/wodorek/blogator/internal/config"
 )
+
+type state struct {
+	cfg *config.Config
+}
 
 func main() {
 	cfg, err := config.Read()
@@ -14,20 +19,22 @@ func main() {
 		log.Fatalf("Error reading config file: %v", err)
 	}
 
-	fmt.Printf("Current config %v\n", cfg)
+	appState := &state{cfg: &cfg}
+	cmds := commands{RegisteredCommands: make(map[string]func(*state, command) error)}
+	cmds.register("login", handlerLogin)
 
-	err = cfg.SetUser("Wodorek")
-
-	if err != nil {
-		log.Fatalf("Error setting username: %v", err)
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: cli <command> [args...]")
+		return
 	}
 
-	cfg, err = config.Read()
+	cmdName := os.Args[1]
+	cmdArgs := os.Args[2:]
+
+	err = cmds.run(appState, command{Name: cmdName, Args: cmdArgs})
 
 	if err != nil {
-		log.Fatalf("Error reading config file: %v", err)
+		log.Fatal(err)
 	}
-
-	fmt.Printf("Config after save: %v\n", cfg)
 
 }
