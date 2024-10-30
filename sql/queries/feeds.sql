@@ -4,3 +4,7 @@ INSERT INTO feeds
 VALUES
   ($1, $2, $3, $4, $5, $6)
 RETURNING * ;
+
+-- name: GetAllFeeds :many
+SELECT feeds.name, feeds.url, users.name AS username
+FROM feeds INNER JOIN users ON feeds.user_id = users.id;
