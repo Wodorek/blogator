@@ -60,7 +60,7 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
-func handleReset(s *state, cmd command) error {
+func handlerReset(s *state, cmd command) error {
 
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.Name)
@@ -70,6 +70,34 @@ func handleReset(s *state, cmd command) error {
 
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func handlerGetUsers(s *state, cmd command) error {
+
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("usage: %s", cmd.Name)
+	}
+
+	users, err := s.db.GetAllUsers(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	loggedUser := s.cfg.CurrentUserName
+
+	for _, user := range users {
+
+		isCurrent := ""
+
+		if user.Name == loggedUser {
+			isCurrent = "(current)"
+		}
+
+		fmt.Printf("* %s %s\n", user.Name, isCurrent)
 	}
 
 	return nil
