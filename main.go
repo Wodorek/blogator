@@ -1,13 +1,17 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/wodorek/blogator/internal/config"
+	"github.com/wodorek/blogator/internal/database"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -20,8 +24,19 @@ func main() {
 
 	appState := &state{cfg: &cfg}
 
+	db, err := sql.Open("postgres", appState.cfg.DBURL)
+
+	if err != nil {
+		log.Fatal("error opening database connection")
+	}
+
+	dbQueries := database.New(db)
+	appState.db = dbQueries
+
 	cmds := commands{RegisteredCommands: make(map[string]func(*state, command) error)}
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
+	cmds.register("reset", handleReset)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")

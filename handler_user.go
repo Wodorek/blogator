@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/wodorek/blogator/internal/database"
 )
 
 func handlerLogin(s *state, cmd command) error {
-
-	fmt.Println(len(cmd.Args))
 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
@@ -14,9 +17,13 @@ func handlerLogin(s *state, cmd command) error {
 
 	username := cmd.Args[0]
 
-	fmt.Println(username)
+	_, err := s.db.GetUser(context.Background(), username)
 
-	err := s.cfg.SetUser(username)
+	if err != nil {
+		return fmt.Errorf("no user %s found", username)
+	}
+
+	err = s.cfg.SetUser(username)
 
 	if err != nil {
 		return fmt.Errorf("couldn't set current user: %w", err)
@@ -26,4 +33,44 @@ func handlerLogin(s *state, cmd command) error {
 
 	return nil
 
+}
+
+func handlerRegister(s *state, cmd command) error {
+
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("usage: %s <name>", cmd.Name)
+	}
+
+	username := cmd.Args[0]
+
+	_, err := s.db.CreateUser(context.Background(), database.CreateUserParams{ID: uuid.New(), CreatedAt: time.Now(), UpdatedAt: time.Now(), Name: username})
+
+	if err != nil {
+		return fmt.Errorf("user %s already exists", username)
+	}
+
+	err = s.cfg.SetUser(username)
+
+	if err != nil {
+		return fmt.Errorf("couldn't set current user: %w", err)
+	}
+
+	fmt.Printf("user %s created successfully\n", username)
+
+	return nil
+}
+
+func handleReset(s *state, cmd command) error {
+
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("usage: %s", cmd.Name)
+	}
+
+	err := s.db.ResetTable(context.Background())
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
