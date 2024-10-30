@@ -94,10 +94,10 @@ func handlerGetUsers(s *state, cmd command) error {
 		isCurrent := ""
 
 		if user.Name == loggedUser {
-			isCurrent = "(current)"
+			isCurrent = " (current)"
 		}
 
-		fmt.Printf("* %s %s\n", user.Name, isCurrent)
+		fmt.Printf("* %s%s\n", user.Name, isCurrent)
 	}
 
 	return nil
