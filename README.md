@@ -4,7 +4,7 @@ A multi-player command line tool for aggregating RSS feeds and viewing the posts
 
 ## Installation
 
-Make sure you have the latest [Go toolchain](https://golang.org/dl/) installed as well as a local Postgres database. You can then install `gator` with:
+Make sure you have the latest [Go toolchain](https://golang.org/dl/) installed as well as a local Postgres database. You can then install `blogator` with:
 
 ```bash
 go install ...
@@ -27,31 +27,31 @@ Replace the values with your database connection string.
 Create a new user:
 
 ```bash
-gator register <name>
+blogator register <name>
 ```
 
 Add a feed:
 
 ```bash
-gator addfeed <url>
+blogator addfeed <url>
 ```
 
 Start the aggregator:
 
 ```bash
-gator agg 30s
+blogator agg 30s
 ```
 
 View the posts:
 
 ```bash
-gator browse [limit]
+blogator browse [limit]
 ```
 
 There are a few other commands you'll need as well:
 
-- `gator login <name>` - Log in as a user that already exists
-- `gator users` - List all users
-- `gator feeds` - List all feeds
-- `gator follow <url>` - Follow a feed that already exists in the database
-- `gator unfollow <url>` - Unfollow a feed that already exists in the database
+- `blogator login <name>` - Log in as a user that already exists
+- `blogator users` - List all users
+- `blogator feeds` - List all feeds
+- `blogator follow <url>` - Follow a feed that already exists in the database
+- `blogator unfollow <url>` - Unfollow a feed that already exists in the database
