@@ -9,16 +9,10 @@ import (
 	"github.com/wodorek/blogator/internal/database"
 )
 
-func handlerFeedFollow(s *state, cmd command) error {
+func handlerFeedFollow(s *state, cmd command, user database.User) error {
 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <url>", cmd.Name)
-	}
-
-	currentUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-
-	if err != nil {
-		return err
 	}
 
 	feed, err := s.db.GetFeedByUrl(context.Background(), cmd.Args[0])
@@ -27,7 +21,7 @@ func handlerFeedFollow(s *state, cmd command) error {
 		return err
 	}
 
-	createdFollow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{ID: uuid.New(), CreatedAt: time.Now(), UpdatedAt: time.Now(), UserID: currentUser.ID, FeedID: feed.ID})
+	createdFollow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{ID: uuid.New(), CreatedAt: time.Now(), UpdatedAt: time.Now(), UserID: user.ID, FeedID: feed.ID})
 
 	if err != nil {
 		return err
@@ -38,19 +32,13 @@ func handlerFeedFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFeedFollowing(s *state, cmd command) error {
+func handlerFeedFollowing(s *state, cmd command, user database.User) error {
 
 	if len(cmd.Args) != 0 {
 		return fmt.Errorf("usage: %s", cmd.Name)
 	}
 
-	currUser, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-
-	if err != nil {
-		return err
-	}
-
-	following, err := s.db.GetFeedFollowsForUser(context.Background(), currUser.ID)
+	following, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 
 	if err != nil {
 		return err
